@@ -9,6 +9,11 @@ Vue.component('color-form', {
           label="Direction"
           v-model="direction"
         />
+        <v-text-field
+          v-if="!interval"
+          :value="hues.join(', ')"
+          @input="updateHues"
+        />
         <p>{{style.backgroundImage}}</p>
         <v-btn @click="start">Start</v-btn>
         <v-btn @click="stop">Stop</v-btn>
@@ -41,6 +46,15 @@ Vue.component('color-form', {
     },
   },
   methods: {
+    updateHues(newVal) {
+      const newHues = newVal.split(',').map(el => parseInt(el.trim(), 10))
+
+      if (!/^(\d+, )+\d+$/.test(newVal) || newHues.some(el => el > 360)) {
+        return
+      }
+
+      this.hues = newVal.split(',').map(el => parseInt(el.trim(), 10))
+    },
     start() {
       this.stop()
       this.interval = setInterval(() => {
@@ -60,6 +74,8 @@ new Vue({
   <v-app>
     <v-content>
       <v-container>
+        <color-form></color-form>
+        <color-form></color-form>
         <color-form></color-form>
       </v-container>
     </v-content>
