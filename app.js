@@ -19,6 +19,12 @@ Vue.component('color-form', {
         <v-btn @click="stop">Stop</v-btn>
     </div>
     `,
+  props: {
+    index: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       interval: null,
@@ -28,7 +34,7 @@ Vue.component('color-form', {
     }
   },
   mounted() {
-    this.start()
+    this.load()
   },
   destroyed() {
     this.stop()
@@ -54,16 +60,37 @@ Vue.component('color-form', {
       }
 
       this.hues = newVal.split(',').map(el => parseInt(el.trim(), 10))
+      this.save()
     },
     start() {
       this.stop()
       this.interval = setInterval(() => {
         this.hues = this.hues.map(hue => (hue + 1) % 360)
       }, 20)
+      this.save()
     },
     stop() {
       clearInterval(this.interval)
       this.interval = null
+      this.save()
+    },
+    save() {
+      localStorage.setItem(`colors_${this.index}`, JSON.stringify({
+        direction: this.direction,
+        hues: this.hues,
+        running: !!this.interval,
+      }))
+    },
+    load() {
+      const storageData = localStorage.getItem(`colors_${this.index}`)
+      if (storageData) {
+        const { hues, running, direction } = JSON.parse(storageData)
+        this.hues = hues
+        this.direction = direction
+        if (running) {
+          this.start()
+        }
+      }
     },
   },
 })
@@ -74,9 +101,9 @@ new Vue({
   <v-app>
     <v-content>
       <v-container>
-        <color-form></color-form>
-        <color-form></color-form>
-        <color-form></color-form>
+        <color-form :index="0"></color-form>
+        <color-form :index="1"></color-form>
+        <color-form :index="2"></color-form>
       </v-container>
     </v-content>
   </v-app>
