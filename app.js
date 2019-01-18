@@ -10,23 +10,35 @@ Vue.component('color-form', {
           v-model="direction"
         />
         <p>{{style.backgroundImage}}</p>
+        <v-btn @click="start">Start</v-btn>
     </div>
     `,
   data() {
     return {
+      hues: [0, 100],
       direction: 'to right',
       directions: ['to top', 'to right', 'to bottom', 'to left'],
     }
   },
   computed: {
+    colors() {
+      return this.hues.map(hue => `hsl(${hue}, 70%, 50%)`)
+    },
     style() {
       return {
-        backgroundImage: `linear-gradient(${this.direction}, hsl(0, 70%, 50%), hsl(100, 70%, 50%))`,
+        backgroundImage: `linear-gradient(${this.direction}, ${this.colors.join(', ')})`,
         padding: '30px',
         margin: '16px 0',
       }
     },
   },
+  methods: {
+    start() {
+      setInterval(() => {
+        this.hues = this.hues.map(hue => (hue + 1) % 360)
+      }, 20)
+    }
+  }
 })
 
 new Vue({
