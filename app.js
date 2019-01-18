@@ -11,14 +11,22 @@ Vue.component('color-form', {
         />
         <p>{{style.backgroundImage}}</p>
         <v-btn @click="start">Start</v-btn>
+        <v-btn @click="stop">Stop</v-btn>
     </div>
     `,
   data() {
     return {
+      interval: null,
       hues: [0, 100],
       direction: 'to right',
       directions: ['to top', 'to right', 'to bottom', 'to left'],
     }
+  },
+  mounted() {
+    this.start()
+  },
+  destroyed() {
+    this.stop()
   },
   computed: {
     colors() {
@@ -34,11 +42,16 @@ Vue.component('color-form', {
   },
   methods: {
     start() {
-      setInterval(() => {
+      this.stop()
+      this.interval = setInterval(() => {
         this.hues = this.hues.map(hue => (hue + 1) % 360)
       }, 20)
-    }
-  }
+    },
+    stop() {
+      clearInterval(this.interval)
+      this.interval = null
+    },
+  },
 })
 
 new Vue({
